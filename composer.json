@@ -1,5 +1,5 @@
 {
-  "name": "benwilkins/laravel-fcm-notification",
+  "name": "umobi/laravel-fcm-notification",
   "description": "Laravel FCM (Firebase Cloud Messaging) Notification Channel",
   "license": "MIT",
   "authors": [
@@ -12,10 +12,10 @@
   "require": {
     "php": ">=5.6.4",
     "guzzlehttp/guzzle": "^6.2",
-    "illuminate/notifications": "5.3.*|5.4.*|5.5.*|5.5.*",
-    "illuminate/queue": "5.3.*|5.4.*|5.5.*|5.5.*",
-    "illuminate/support": "5.3.*|5.4.*|5.5.*|5.5.*",
-    "illuminate/config": "5.3.*|5.4.*|5.5.*|5.5.*"
+    "illuminate/notifications": "5.3.*|5.4.*|5.5.*|5.5.*|5.6.*|5.7.*|5.8.*",
+    "illuminate/queue": "5.3.*|5.4.*|5.5.*|5.5.*|5.6.*|5.7.*|5.8.*",
+    "illuminate/support": "5.3.*|5.4.*|5.5.*|5.5.*|5.6.*|5.7.*|5.8.*",
+    "illuminate/config": "5.3.*|5.4.*|5.5.*|5.5.*|5.6.*|5.7.*|5.8.*"
   },
   "require-dev": {
     "mockery/mockery": "~1.0",
@@ -36,5 +36,12 @@
   },
   "config": {
     "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Benwilkins\\FCM\\FcmNotificationServiceProvider"
+      ]
+    }
   }
 }
