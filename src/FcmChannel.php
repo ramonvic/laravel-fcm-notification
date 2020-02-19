@@ -23,10 +23,10 @@ class FcmChannel
     /**
      * @var string
      */
-    private $apikey;
+    private $apiKey;
 
     /**
-     * @param Client $client
+     * @param  Client  $client
      */
     public function __construct(Client $client, $apiKey)
     {
@@ -35,8 +35,9 @@ class FcmChannel
     }
 
     /**
-     * @param mixed $notifiable
-     * @param Notification $notification
+     * @param  mixed  $notifiable
+     * @param  Notification  $notification
+     * @return mixed
      */
     public function send($notifiable, Notification $notification)
     {
@@ -44,21 +45,43 @@ class FcmChannel
         $message = $notification->toFcm($notifiable);
 
         if (is_null($message->getTo()) && is_null($message->getCondition())) {
-            if (! $to = $notifiable->routeNotificationFor('fcm')) {
+            if (! $to = $notifiable->routeNotificationFor('fcm', $notification)) {
                 return;
             }
 
             $message->to($to);
         }
 
-        $response = $this->client->post(self::API_URI, [
-            'headers' => [
-                'Authorization' => 'key='.$this->apiKey,
-                'Content-Type'  => 'application/json',
-            ],
-            'body' => $message->formatData(),
-        ]);
+        $response_array = [];
 
-        return \GuzzleHttp\json_decode($response->getBody(), true);
+        if (is_array($message->getTo())) {
+            $chunks = array_chunk($message->getTo(), 1000);
+
+            foreach ($chunks as $chunk) {
+                $message->to($chunk);
+
+                $response = $this->client->post(self::API_URI, [
+                    'headers' => [
+                        'Authorization' => 'key='.$this->apiKey,
+                        'Content-Type'  => 'application/json',
+                    ],
+                    'body' => $message->formatData(),
+                ]);
+
+                array_push($response_array, \GuzzleHttp\json_decode($response->getBody(), true));
+            }
+        } else {
+            $response = $this->client->post(self::API_URI, [
+                'headers' => [
+                    'Authorization' => 'key='.$this->apiKey,
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => $message->formatData(),
+            ]);
+
+            array_push($response_array, \GuzzleHttp\json_decode($response->getBody(), true));
+        }
+
+        return $response_array;
     }
 }
