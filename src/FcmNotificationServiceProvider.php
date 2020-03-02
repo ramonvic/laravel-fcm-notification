@@ -17,10 +17,16 @@ class FcmNotificationServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Notification::resolved(function (ChannelManager $service) {
-            $service->extend('fcm', function () {
-                return new FcmChannel(app(Client::class), config('services.fcm.key'));
+        if (version_compare(app()::VERSION, '5.8.0', '>=')) {
+            Notification::resolved(function (ChannelManager $service) {
+                $service->extend('fcm', function () {
+                    return new FcmChannel(app(Client::class), config('services.fcm.key'));
+                });
             });
-        });
+        } else {
+            Notification::extend('fcm', function ($app) {
+                return new FcmChannel(new Client(), config('services.fcm.key'));
+            });
+        }
     }
 }
